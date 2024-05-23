@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Install Helm
+sudo snap install helm --classic
+
+# Add EKS Helm repository
+helm repo add eks https://aws.github.io/eks-charts
+
+# Update Helm repositories
+helm repo update eks
+
+# Install AWS Load Balancer Controller using Helm
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=my-cluster \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+
+# Check the deployment status of AWS Load Balancer Controller
+kubectl get deployment -n kube-system aws-load-balancer-controller
+
+# Apply the Kubernetes manifest file for the full stack LB (full_stack_lb.yaml)
+kubectl apply -f full_stack_lb.yaml
